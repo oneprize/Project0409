@@ -18,7 +18,7 @@ public class MonsterAI : MonoBehaviour
     private float decisionTime = 0f;
     private float decisionInterval = 2f;
 
-    private bool isAttacking = false;
+    public bool isAttacking = false;
 
     private enum State { Idle, MoveLeft, MoveRight }
     private State currentState = State.Idle;
@@ -38,7 +38,7 @@ public class MonsterAI : MonoBehaviour
         // 공격 중이면 멈춤
         if (isAttacking)
         {
-            rb.linearVelocity = Vector2.zero;
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             return;
         }
 

@@ -32,8 +32,8 @@ public class PlayerDash : MonoBehaviour
             currentDashCount = maxDashCount;
         }
 
-        // 대쉬 입력 (예: X키)
-        if (Input.GetKeyDown(KeyCode.X) && currentDashCount > 0)
+        // 대쉬 입력
+        if (Input.GetMouseButtonDown(1) && currentDashCount > 0)
         {
             Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 direction = (mousePos - (Vector2)transform.position).normalized;

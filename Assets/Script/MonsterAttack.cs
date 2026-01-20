@@ -8,6 +8,7 @@ public class MonsterAttack : MonoBehaviour
     private float lastAttackTime = -Mathf.Infinity;
     private Animator animator;
     private Transform target;
+    public MonsterAI MonsterAI;
 
     private bool canAttack = true;
 
@@ -15,6 +16,7 @@ public class MonsterAttack : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         target = GameObject.FindGameObjectWithTag("Player")?.transform;
+        MonsterAI = GetComponent<MonsterAI>(); 
     }
 
     void Update()
@@ -32,14 +34,19 @@ public class MonsterAttack : MonoBehaviour
                 animator.SetTrigger("Attack");
             }
 
-            // 애니메이션 타이밍 동안 이동 중지
-            MonsterAI ai = GetComponentInParent<MonsterAI>();
-            if (ai != null)
+            if (MonsterAI != null)
             {
-                ai.StartAttack(attackCooldown);
-            }
+                MonsterAI.StartAttack(1f);
+                Debug.Log("공격시: isAttacking true");
 
-            Debug.Log("몬스터가 공격 애니메이션 실행!");
+            }
+            else if (MonsterAI == null)
+            {
+                Debug.Log("연결안됌");
+            }    
+
+
+                Debug.Log("몬스터가 공격 애니메이션 실행 및 AI 정지!");
         }
     }
 
