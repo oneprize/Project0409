@@ -1,25 +1,25 @@
 using UnityEngine;
 
 public class DungeonDoor : MonoBehaviour
-{
-    [SerializeField] private GameObject doorVisual;
+{   
     [SerializeField] private Collider2D doorCollider;
+    private Animator animator;
     
     void Start()
     {
         CloseDoor();
+        animator = GetComponent<Animator>();
     }
 
 
     public void OpenDoor()
     {
-        doorVisual.SetActive(false);
+        animator.SetTrigger("Open");
         doorCollider.enabled = false;
     }
 
     public void CloseDoor()
     {
-        doorVisual.SetActive(true);
         doorCollider.enabled = true;
     }
 }
