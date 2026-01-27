@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Dungeon0.unity
+    guid: 0229048bdb6b7654d86b12d6a7c294bc
+  - enabled: 1
     path: Assets/Scenes/Dungeon1(1).unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
@@ -14,6 +17,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Dungeon3.unity
     guid: acd0de91ea8252d4cadf86255f39858e
+  - enabled: 1
+    path: Assets/Scenes/Logo.unity
+    guid: f3be81b24df31624bb298774ddbb0ab2
+  - enabled: 1
+    path: Assets/Scenes/Village.unity
+    guid: a3ac59b79bfd47c4eabc44c14cbfae76
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

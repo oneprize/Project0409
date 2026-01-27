@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class BossMain : MonoBehaviour
 {
     public Transform player;
+    public Transform skellBoss;
     public Transform leftHand;
     public Transform rightHand;
 
@@ -14,6 +15,7 @@ public class BossMain : MonoBehaviour
 
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player")?.transform;
         // 모든 패턴 초기화
         foreach (var p in patterns) p.Init(this);
         StartCoroutine(PatternLoop());

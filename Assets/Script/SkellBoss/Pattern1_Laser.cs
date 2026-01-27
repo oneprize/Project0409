@@ -13,6 +13,7 @@ public class Pattern1_Laser : BossPattern
 
     public override IEnumerator Execute()
     {
+        Debug.Log("패턴 1: 레이저 전개");
         // 1. 왼손 공격
         yield return StartCoroutine(HandAttackSequence(boss.leftHand));
         yield return new WaitForSeconds(3f);
@@ -37,7 +38,7 @@ public class Pattern1_Laser : BossPattern
         if (previewLine != null) previewLine.enabled = true;
 
         while (timer < trackingTime)
-        {
+        {         
             // 플레이어 y축 추적
             float targetY = boss.player.position.y;
             Vector3 targetPosition = new Vector3(hand.position.x, targetY, 0);
