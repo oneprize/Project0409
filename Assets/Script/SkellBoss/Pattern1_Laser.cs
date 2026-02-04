@@ -83,7 +83,7 @@ public class Pattern1_Laser : BossPattern
         }
 
             // 손의 위치에 레이저 생성
-            GameObject laser = Instantiate(laserPrefab, hand.position, Quaternion.identity);
+            GameObject laser = Instantiate(laserPrefab, spawnPos, Quaternion.identity);
 
         // 보스 방향에 따른 레이저 방향 설정
         float direction = (hand.position.x < boss.player.position.x) ? 1f : -1f;

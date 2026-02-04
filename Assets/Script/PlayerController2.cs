@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections;
+using Unity.Cinemachine;
 
 public class PlayerController2 : MonoBehaviour, IDamageable
 {
@@ -101,6 +103,21 @@ public class PlayerController2 : MonoBehaviour, IDamageable
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f);
         }
+
+        if (Input.GetAxisRaw("Vertical") < 0 && Input.GetButtonDown("Jump"))
+        {            
+            StartCoroutine(DownJump());
+        }
+    }
+
+    IEnumerator DownJump()
+    {       
+        var playerLayer = LayerMask.NameToLayer("Player");
+        var platformLayer = LayerMask.NameToLayer("Platform");
+
+        Physics2D.IgnoreLayerCollision(playerLayer, platformLayer, true);
+        yield return new WaitForSeconds(0.4f);
+        Physics2D.IgnoreLayerCollision(playerLayer, platformLayer, false);
     }
 
     private void HandleSpriteFlip()
