@@ -3,8 +3,9 @@ using UnityEngine;
 public class PlayerAttack : MonoBehaviour
 {
     private Animator animator;
+    public WeaponAttack weapon; // 인스펙터에서 WeaponAttack이 붙은 오브젝트를 할당하세요.
 
-    void Start()
+    void Awake()
     {
         animator = GetComponent<Animator>();
     }
@@ -13,21 +14,18 @@ public class PlayerAttack : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            animator.SetBool("isAttacking", true);
-        }
-
-        // 애니메이션 끝나면 다시 false로
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack") &&
-            animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f)
-        {
-            animator.SetBool("isAttacking", false);
+            // 무기가 공격 중이 아닐 때만 실행
+            if (weapon != null && !weapon.IsAttacking)
+            {
+                Attack();
+            }
         }
     }
 
-    //  이 함수는 애니메이션 이벤트에서 호출됨
-    public void ApplyDamage()
+    void Attack()
     {
-        Debug.Log("ApplyDamage 애니메이션 이벤트 호출됨!");
-        // 몬스터 데미지 처리 등은 이 안에서 구현
+        animator.SetTrigger("Attack");
+
+        weapon.ExecuteAttack();
     }
 }

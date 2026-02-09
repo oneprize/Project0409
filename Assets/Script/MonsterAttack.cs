@@ -10,8 +10,6 @@ public class MonsterAttack : MonoBehaviour
     private Transform target;
     public MonsterAI MonsterAI;
 
-    private bool canAttack = true;
-
     void Start()
     {
         animator = GetComponent<Animator>();

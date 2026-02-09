@@ -1,6 +1,10 @@
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using System.Collections;
+using Unity.Cinemachine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageable
 {
     public float moveSpeed = 5f;
     public float jumpForce = 7f;
@@ -11,14 +15,31 @@ public class PlayerController : MonoBehaviour
     private int jumpCount;
     private bool isGrounded;
     private bool wasGrounded;
-
+    private bool isDead = false;
+    
     private Rigidbody2D rb;
     private Animator animator;
 
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
+    public Slider hpBar;
 
-    void Awake()
+    //  Game Over UI 연결용
+    public GameObject gameOverUI;
+
+    private Camera mainCamera;
+    public Transform weaponPivot;
+
+    [SerializeField] Transform groundCheck2;
+    [SerializeField] float groundCheckRadius = 0.1f;
+    [SerializeField] LayerMask platformLayer;
+
+    bool IsOnPlatform()
+    {
+        return Physics2D.OverlapCircle(groundCheck2.position, groundCheckRadius, platformLayer);
+    }
+
+        void Awake()
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
@@ -35,25 +56,43 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        mainCamera = Camera.main;
         jumpCount = maxJumps;
         currentHP = maxHP;
+
+        if (hpBar != null)
+        {
+            hpBar.maxValue = maxHP;
+            hpBar.value = currentHP;
+        }
+
+        // 게임 오버 UI 꺼두기
+        if (gameOverUI != null)
+            gameOverUI.SetActive(false);
     }
 
     void Update()
     {
-        // 이동 입력
+        if (isDead)
+        {
+            // R 키로 씬 재시작
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+            return;
+        }
+
         float moveX = Input.GetAxisRaw("Horizontal");
         rb.linearVelocity = new Vector2(moveX * moveSpeed, rb.linearVelocity.y);
 
-        // 애니메이션
         if (animator != null)
             animator.SetFloat("Speed", Mathf.Abs(moveX));
 
-        // 좌우 반전
-        if (moveX != 0)
-            transform.localScale = new Vector3(Mathf.Sign(moveX), 1, 1);
+        HandleSpriteFlip();
 
-        // 바닥 체크
+        HandleWeaponAiming();
+
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.15f, groundLayer);
 
         if (isGrounded && !wasGrounded)
@@ -63,30 +102,121 @@ public class PlayerController : MonoBehaviour
 
         wasGrounded = isGrounded;
 
-        // 점프
-        if (Input.GetButtonDown("Jump") && jumpCount > 0)
+        if (Input.GetButtonDown("Jump") && jumpCount > 0 && !(Input.GetAxisRaw("Vertical")<0))
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             jumpCount--;
         }
 
-        // 점프 버튼 짧게 누르면 낮게 뜀
         if (Input.GetButtonUp("Jump") && rb.linearVelocity.y > 0)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f);
         }
+
+        if (IsOnPlatform() && Input.GetAxisRaw("Vertical") < 0 && Input.GetButtonDown("Jump"))
+        {            
+            StartCoroutine(DownJump());
+        }
     }
 
-    // === 공격 받는 기능 ===
+    IEnumerator DownJump()
+    {
+        
+        Collider2D[] platforms = Physics2D.OverlapCircleAll(groundCheck2.position, groundCheckRadius, platformLayer);
+
+        if (platforms.Length > 0)
+        {
+            foreach (var platform in platforms)
+            {
+                Physics2D.IgnoreCollision(GetComponent<Collider2D>(), platform, true);
+            }
+
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -jumpForce * 0.5f);
+
+            yield return new WaitForSeconds(0.4f);
+
+            foreach (var platform in platforms)
+            {
+                if (platform != null)
+                {
+                    Physics2D.IgnoreCollision(GetComponent<Collider2D>(), platform, false);
+                }
+            }
+        }
+    }
+
+    private void HandleSpriteFlip()
+    {
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+        }
+        Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+
+        if (mousePos.x < transform.position.x)
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+        else
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+    }
+
+    private void HandleWeaponAiming()
+    {
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+        }
+        Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 targetDir = mousePos - weaponPivot.position;
+
+        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+
+        if (transform.localScale.x < 0)
+        {
+            weaponPivot.rotation = Quaternion.Euler(0, 0, angle + 180f);
+        }
+        else
+        {
+            weaponPivot.rotation = Quaternion.Euler(0, 0, angle);
+        }
+    }
+
+
+
     public void TakeDamage(int damage)
     {
+        if (isDead) return;
+
         currentHP -= damage;
+        currentHP = Mathf.Max(0, currentHP);
+
+        if (hpBar != null)
+        {
+            hpBar.value = currentHP;
+        }
+
         Debug.Log("플레이어 피격! 남은 HP: " + currentHP);
 
         if (currentHP <= 0)
         {
             Debug.Log("플레이어 사망");
-            // TODO: 게임 오버 처리
+
+            isDead = true;
+
+            if (animator != null)
+            {
+                animator.SetTrigger("Die");
+            }
+
+            rb.linearVelocity = Vector2.zero;
+
+            if (gameOverUI != null)
+            {
+                gameOverUI.SetActive(true); //  게임 오버 UI 표시
+            }
         }
     }
 }

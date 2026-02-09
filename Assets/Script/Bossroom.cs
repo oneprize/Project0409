@@ -24,7 +24,7 @@ public class Bossroom : MonoBehaviour
     IEnumerator BossZoom(GameObject player)
     {
         Debug.Log("코루틴 실행");
-        var controller = player.GetComponent<PlayerController2>();
+        var controller = player.GetComponent<PlayerController>();
         if (controller != null) controller.enabled = false;
 
         bossCamera.Priority = 20;
