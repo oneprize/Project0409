@@ -35,7 +35,6 @@ public class MonsterController : MonoBehaviour, IDamageable
             animator.SetTrigger("Die"); // "Die" 트리거 애니메이션 실행
         }
 
-        // 일정 시간 후 오브젝트 제거
-        Destroy(gameObject, 1.5f); // 애니메이션 길이에 따라 시간 조절
+        Destroy(gameObject);
     }
 }

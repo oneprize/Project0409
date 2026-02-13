@@ -7,23 +7,28 @@ public class Bossroom : MonoBehaviour
     public CinemachineCamera playerCamera;
     public CinemachineCamera bossCamera;
 
+    [Header("Boss Reference")]
+    public BossMain bossMain;
+
     private GameObject player;
+    public GameObject DungeonDoor;
+    public GameObject DungeonDoor2;
 
     private float focusTime = 3f;
     private bool isBossZoomIN = false;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // 변수 할당 여부와 상관없이 충돌한 대상의 태그만 확인하면 됩니다.
         if (collision.CompareTag("Player") && !isBossZoomIN)
         {
-            isBossZoomIN = true; // 실행됨을 표시
+            isBossZoomIN = true;
+            DungeonDoor.SetActive(true);
+            DungeonDoor2.SetActive(true);
             StartCoroutine(BossZoom(collision.gameObject));
         }
     }
     IEnumerator BossZoom(GameObject player)
     {
-        Debug.Log("코루틴 실행");
         var controller = player.GetComponent<PlayerController>();
         if (controller != null) controller.enabled = false;
 
@@ -32,5 +37,13 @@ public class Bossroom : MonoBehaviour
         bossCamera.Priority = 10;
         yield return new WaitForSeconds(1.5f);
         if (controller != null) controller.enabled = true;
+        if (bossMain != null)
+        {
+            bossMain.ActivateBoss();
+        }
+        else
+        {
+            Debug.LogError("BossMain이 Bossroom 스크립트에 할당되지 않았습니다!");
+        }
     }
 }

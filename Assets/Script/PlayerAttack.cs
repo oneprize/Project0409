@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerAttack : MonoBehaviour
 {
     private Animator animator;
-    public WeaponAttack weapon; // 인스펙터에서 WeaponAttack이 붙은 오브젝트를 할당하세요.
+    public WeaponAttack weapon;
 
     void Awake()
     {

@@ -18,6 +18,8 @@ public class BossMain : MonoBehaviour
     public List<BossPattern> patterns;
     private int lastPatternIndex = -1; // 직전 패턴 기억
 
+    private bool isBossActive = false;
+
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
@@ -27,11 +29,19 @@ public class BossMain : MonoBehaviour
         rightHandOrigin = rightHand.localPosition;
 
         foreach (var p in patterns) p.Init(this);
+    }
+
+    public void ActivateBoss()
+    {
+        if (isBossActive) return;
+        isBossActive = true;
         StartCoroutine(PatternLoop());
     }
 
     IEnumerator PatternLoop()
     {
+        yield return new WaitForSeconds(0.5f);
+
         while (true)
         {
             yield return new WaitForSeconds(2f);

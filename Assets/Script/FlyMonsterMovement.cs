@@ -6,7 +6,7 @@ public class FlyMonsterMovement : MonoBehaviour
     private Transform player;      // 플레이어의 위치
     public float moveSpeed = 3f;  // 이동 속도
     public float detectRange = 7f; // 인식 범위
-    public float attackRange = 2.5f; // 공격 범위
+    public float attackRange = 3f; // 공격 범위
 
     public enum EnemyState { Idle, Patrol, Chasing, ReadyToDash, Dashing }
     public EnemyState currentState = EnemyState.Patrol;
@@ -27,6 +27,9 @@ public class FlyMonsterMovement : MonoBehaviour
     [Header("Sin Wave Settings")]
     public float amplitude = 0.5f;
     public float frequency = 3f;
+
+    [Header("Distance Settings")]
+    public float stopDistance = 2.5f; // 플레이어와 유지할 최소 거리
 
     private Rigidbody2D rb;
     private float sinTimer;
@@ -54,7 +57,14 @@ public class FlyMonsterMovement : MonoBehaviour
         else if (distanceToPlayer <= detectRange)
         {
             currentState = EnemyState.Chasing;
-            MoveTowards(player.position);
+            if (distanceToPlayer > stopDistance)
+            {
+                MoveTowards(player.position);
+            }
+            else
+            {
+                rb.linearVelocity = Vector2.zero;
+            }
         }
         else
         {

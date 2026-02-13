@@ -1,40 +1,135 @@
+using System.Collections.Generic;
+using UnityEngine.UI;
 using UnityEngine;
+using TMPro;
+
 
 public class NPCText : MonoBehaviour
 {
+    [Header("UI 연결")]
     [SerializeField] private GameObject fKeyPanel;
     [SerializeField] private GameObject dialoguePanel;
-    [SerializeField] private GameObject dialoguePanel2;
-    [SerializeField] private GameObject YesButton;
-    [SerializeField] private GameObject NoButton;
+    [SerializeField] private GameObject choicePanel;
+    [SerializeField] private GameObject choiceButtonPrefab;
     [SerializeField] private GameObject TextBox;
     [SerializeField] private TypewriterEffect typewriter;
 
-    [Header("대화 데이터")]
-    [SerializeField] private DialogueData npcDialogueData; // 리스트 대신 데이터 에셋을 넣습니다.
+    [Header("데이터")]
+    [SerializeField] private DialogueData npcDialogueData;
 
     private int dialogueIndex = 0;
     private bool isPlayerInRange = false;
     private bool isDialogueActive = false;
+    private List<GameObject> activeButtons = new List<GameObject>();
+
 
     private void Update()
     {
         if (isPlayerInRange && Input.GetKeyDown(KeyCode.F))
         {
-            if (!isDialogueActive) StartDialogue();
-            else NextDialogue();
+            // 타자기 효과가 진행 중일 때 F를 누르면 스킵하는 로직이 typewriter에 있다면 좋음
+            if (!isDialogueActive)
+                StartDialogue();
+            else if (activeButtons.Count == 0) // 선택지가 없을 때만 F키로 다음 대사 진행
+                NextDialogue();
         }
     }
 
     private void StartDialogue()
     {
+        if (npcDialogueData == null || npcDialogueData.steps.Count == 0) return;
+
         isDialogueActive = true;
         dialoguePanel.SetActive(true);
         fKeyPanel.SetActive(false);
         TextBox.SetActive(true);
         dialogueIndex = 0;
-
         ShowCurrentDialogue();
+    }
+
+    private void ShowCurrentDialogue()
+    {
+        ClearButtons();
+        DialogueStep currentStep = npcDialogueData.steps[dialogueIndex];
+
+        // 1. 조건 체크 (해당 단계의 조건을 만족하지 못하면 대화 종료 혹은 안내)
+        if (!string.IsNullOrEmpty(currentStep.requiredFlag) && !GameEventManager.IsEventCompleted(currentStep.requiredFlag))
+        {
+            typewriter.PlayTypewriter("아직 나랑 대화할 준비가 안 된 것 같군.");
+            // 보너스: 조건 안 맞으면 2초 뒤 종료하거나 다음 클릭 시 종료되게 처리 필요
+            return;
+        }
+
+        typewriter.PlayTypewriter(currentStep.text);
+
+        // 2. 선택지 생성
+        if (currentStep.choices != null && currentStep.choices.Count > 0)
+        {
+            choicePanel.SetActive(true);
+            foreach (Choice choice in currentStep.choices)
+            {
+                CreateButton(choice);
+            }
+        }
+    }
+
+    private void CreateButton(Choice choiceData)
+    {
+        if (choiceButtonPrefab == null) Debug.Log("프리팹없음");
+        GameObject btnObj = Instantiate(choiceButtonPrefab, choicePanel.transform);
+        activeButtons.Add(btnObj);
+
+        // 텍스트 설정
+        TMP_Text btnText = btnObj.GetComponentInChildren<TMP_Text>();
+        if (btnText != null) btnText.text = choiceData.choiceText;
+
+        // 버튼 클릭 이벤트 (람다식 사용 시 데이터 오염 방지를 위해 로컬 변수화)
+        btnObj.GetComponent<Button>().onClick.AddListener(() => OnChoiceSelected(choiceData));
+    }
+
+    private void OnChoiceSelected(Choice choice)
+    {
+        Debug.Log($"[선택지 클릭] 선택한 텍스트: {choice.choiceText}, grantFlag: {choice.grantFlag}");
+        // 1. 보상 처리
+        if (choice.giveItem) ItemManager.AddItem(choice.itemPrefab, choice.itemCount, transform.position);
+
+        // 2. 씬 이동 로직 (매니저에게 위임)
+        if (!string.IsNullOrEmpty(choice.grantFlag) && choice.grantFlag.StartsWith("GoToNextScene"))
+        {
+            string targetScene = choice.grantFlag.Replace("GoToNextScene", "Dungeon0");
+            Debug.Log($"[씬 전환 시도] 대상 씬 이름: {targetScene}");
+            // UI를 미리 정리
+            ClearButtons();
+            dialoguePanel.SetActive(false);
+            TextBox.SetActive(false);
+
+            // 매니저 호출
+            if (SceneTransferManager.Instance != null)
+            {
+                SceneTransferManager.Instance.ChangeScene(targetScene);
+            }
+            else
+            {
+                Debug.LogError("SceneTransferManager 인스턴스가 씬에 없습니다!");
+            }
+            return;
+        }
+
+        // 3. 일반 플래그 처리 및 다음 대화
+        if (!string.IsNullOrEmpty(choice.grantFlag))
+        {
+            GameEventManager.CompleteEvent(choice.grantFlag);
+        }
+
+        ClearButtons();
+        NextDialogue();
+    }
+
+    private void ClearButtons()
+    {
+        foreach (GameObject btn in activeButtons) Destroy(btn);
+        activeButtons.Clear();
+        if (choicePanel != null) choicePanel.SetActive(false);
     }
 
     private void NextDialogue()
@@ -44,95 +139,42 @@ public class NPCText : MonoBehaviour
         if (dialogueIndex >= npcDialogueData.steps.Count)
         {
             EndDialogue();
-            return;
         }
-
-        ShowCurrentDialogue();
-    }
-
-    private void ShowCurrentDialogue()
-    {
-        DialogueStep currentStep = npcDialogueData.steps[dialogueIndex];
-
-        // 핵심: 조건을 검사합니다!
-        if (!GameEventManager.IsEventCompleted(currentStep.requiredFlag))
+        else
         {
-            typewriter.PlayTypewriter("아직 나랑 대화할 준비가 안 된 것 같군.");
-            // 여기서 강제로 대화를 끊거나, 이전 인덱스로 돌릴 수 있습니다.
-            return;
+            ShowCurrentDialogue();
         }
-
-        // 버튼 활성화 여부를 데이터에 따라 결정합니다.
-        bool shouldShowButtons = currentStep.showButtons;
-        dialoguePanel2.SetActive(shouldShowButtons);
-        YesButton.SetActive(shouldShowButtons);
-        NoButton.SetActive(shouldShowButtons);
-
-        typewriter.PlayTypewriter(currentStep.text);
     }
 
-    private void EndDialogue()
+    public void EndDialogue()
     {
+        if (this == null) return;
+
         isDialogueActive = false;
         dialoguePanel.SetActive(false);
-        fKeyPanel.SetActive(true);
-        // 대화가 끝나면 이 NPC와 대화했다는 플래그를 저장할 수도 있습니다.
-        // GameEventManager.CompleteEvent("TalkedTo_" + gameObject.name);
+        if (isPlayerInRange && fKeyPanel != null) fKeyPanel.SetActive(true);
+        TextBox.SetActive(false);
+        ClearButtons();
+        dialogueIndex = 0;
     }
 
+    // --- 트리거 부분 ---
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
             isPlayerInRange = true;
-            if (fKeyPanel != null)
-                fKeyPanel.SetActive(true);
+            if (fKeyPanel != null && !isDialogueActive) fKeyPanel.SetActive(true);
         }
     }
-
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
             isPlayerInRange = false;
-            if (fKeyPanel != null)
-                fKeyPanel.SetActive(false);
+            if (fKeyPanel != null) fKeyPanel.SetActive(false);
+            if (isDialogueActive) EndDialogue(); // 멀어지면 대화 강제 종료
         }
-    }
-
-    public void OnClickYes()
-    {
-        DialogueStep currentStep = npcDialogueData.steps[dialogueIndex];
-
-        // 1. 아이템 지급 처리
-        if (currentStep.giveItem)
-        {
-            ItemManager.AddItem(currentStep.itemID, currentStep.itemCount);
-        }
-
-        // 2. 퀘스트 완료 플래그 등 처리
-        if (!string.IsNullOrEmpty(currentStep.grantFlag))
-        {
-            GameEventManager.CompleteEvent(currentStep.grantFlag);
-        }
-
-        // 3. 버튼 끄고 다음 대사로
-        CloseButtons();
-        NextDialogue();
-    }
-
-    public void OnClickNo()
-    {
-        // 거절했을 때의 로직 (예: 대화 종료)
-        CloseButtons();
-        EndDialogue();
-    }
-
-    private void CloseButtons()
-    {
-        dialoguePanel2.SetActive(false);
-        YesButton.SetActive(false);
-        NoButton.SetActive(false);
     }
 }
