@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     private int jumpCount;
     private bool isGrounded;
     private bool wasGrounded;
-    private bool isDead = false;
+    public bool isDead = false;
     
     private Rigidbody2D rb;
     private Animator animator;
@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public GameObject gameOverUI;
 
     private Camera mainCamera;
+    private PlayerDash playerDash;
     public Transform weaponPivot;
 
     [SerializeField] Transform groundCheck2;
@@ -56,6 +57,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        playerDash = GetComponent<PlayerDash>();
         mainCamera = Camera.main;
         jumpCount = maxJumps;
         currentHP = maxHP;
@@ -73,15 +75,7 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     void Update()
     {
-        if (isDead)
-        {
-            // R 키로 씬 재시작
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            }
-            return;
-        }
+        Die();
 
         float moveX = Input.GetAxisRaw("Horizontal");
         rb.linearVelocity = new Vector2(moveX * moveSpeed, rb.linearVelocity.y);
@@ -189,6 +183,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public void TakeDamage(int damage)
     {
         if (isDead) return;
+        if (playerDash.IsInvincible()) return;
 
         currentHP -= damage;
         currentHP = Mathf.Max(0, currentHP);
@@ -218,5 +213,24 @@ public class PlayerController : MonoBehaviour, IDamageable
                 gameOverUI.SetActive(true); //  게임 오버 UI 표시
             }
         }
+    }
+    public void Die()
+    {
+        if (isDead)
+        {
+            // R 키로 씬 재시작
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                ResetGame();
+                SceneManager.LoadScene("Village");
+            }
+            return;
+        }
+    }
+
+    private void ResetGame()
+    {
+        Destroy(gameObject);
+        gameOverUI.SetActive(false);
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class WeaponAttack : MonoBehaviour
 {
     public int damage = 10;
-    public float attackDuration = 0.2f; // 실제 공격 판정이 활성화되는 시간
+    public float attackDuration = 1f; // 실제 공격 판정이 활성화되는 시간
     public LayerMask enemyLayer;
 
     private Collider2D weaponCollider;
@@ -16,7 +16,7 @@ public class WeaponAttack : MonoBehaviour
     {
         weaponCollider = GetComponent<Collider2D>();
         weaponCollider.isTrigger = true;
-        weaponCollider.enabled = false;
+        this.enabled = false;
     }
 
     public void ExecuteAttack()

@@ -1,56 +1,51 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
 public class SceneTransition : MonoBehaviour
 {
-#if UNITY_EDITOR
-    [Header("드래그할 씬 (유니티 에디터 전용)")]
-    public SceneAsset sceneAsset;
-#endif
+    public enum TransitionType { PortalID, DirectPosition }
 
-    [SerializeField] private string sceneName;
-    [SerializeField] private Transform destinationTransform; // 현재 씬 안에서만 참조됨
+    [Header("이동 방식 설정")]
+    public TransitionType type;
+    public string targetSceneName;
 
-    private static Vector3 nextPosition = Vector3.zero;
+    [Header("ID 방식 (일반 던전)")]
+    public int targetPortalID; // 도착할 포탈 번호
+    public int myPortalID;     // 이 포탈의 고유 번호
+
+    [Header("자식 오브젝트로 지정할 스폰 위치")]
+    [SerializeField] private Transform spawnPoint;
+
+    [Header("직접 좌표 (보스룸 등)")]
+    public Vector3 customTargetPosition;
+
+    [Header("무한루프 방지")]
+    private static float lastTransitionTime = -1f;
+    private const float transitionDelay = 1.0f; // 1초 쿨타임
+
+    private void Awake()
+    {
+        Vector3 spawnPos = (spawnPoint != null) ? spawnPoint.position : transform.position;
+        PortalManager.RegisterPortal(myPortalID, spawnPos);
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            // 다음 씬에서 사용할 위치를 미리 저장
-            if (destinationTransform != null)
-                nextPosition = destinationTransform.position;
+            // 쿨타임 체크 (방금 이동해왔는데 다시 나가는 것 방지)
+            if (Time.time < lastTransitionTime + transitionDelay) return;
 
-            SceneManager.sceneLoaded += OnSceneLoaded;
-            SceneManager.LoadScene(sceneName);
+            lastTransitionTime = Time.time;
+
+            // 목적지 타입에 따라 데이터 전송
+            if (type == TransitionType.PortalID)
+                PortalManager.SetTargetID(targetPortalID);
+            else
+                PortalManager.SetTargetPosition(customTargetPosition);
+
+            DungeonManager.MarkRoomAsCleared();
+            SceneManager.LoadScene(targetSceneName);
         }
     }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            player.transform.position = nextPosition;
-        }
-
-        // 위치 초기화 (다음 이동에 영향 안 주게)
-        nextPosition = Vector3.zero;
-    }
-
-#if UNITY_EDITOR
-    private void OnValidate()
-    {
-        if (sceneAsset != null)
-        {
-            sceneName = sceneAsset.name;
-        }
-    }
-#endif
 }

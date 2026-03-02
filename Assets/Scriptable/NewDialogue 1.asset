@@ -14,18 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   steps:
   - text: "\uBC18\uAC11\uB2E4"
-    requiredFlag: 
+    requiredFlag: TalkedToMayor
+    rejectMessage: "\uC544\uB974\uC0E4\uC640 \uBA3C\uC800 \uB300\uD654\uD558\uACE0
+      \uC624\uAC8C\uB098"
     choices: []
   - text: "\uAC00\uC838\uAC00\uACA0\uB098?"
     requiredFlag: 
+    rejectMessage: 
     choices:
     - choiceText: "\uB124"
-      grantFlag: 
+      grantFlag: HasSword
       giveItem: 1
-      itemPrefab: {fileID: 1913389709292232945, guid: 9be2aaa78e1841144a1f9be0ad9ae924, type: 3}
+      checkFlag: 
+      failMessage: 
+      itemPrefab: {fileID: 4183374213265032095, guid: bc82b9cc9a9c85245b13a4e504bcb546, type: 3}
       itemCount: 1
     - choiceText: "\uC544\uB2C8\uC694"
       grantFlag: 
       giveItem: 0
+      checkFlag: 
+      failMessage: 
       itemPrefab: {fileID: 0}
       itemCount: 0

@@ -1,35 +1,39 @@
 using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
+
 
 public class PlayerDash : MonoBehaviour
 {
     public float dashDistance = 3f;
     public float dashDuration = 0.2f;
     public int maxDashCount = 2;
-    public LayerMask groundLayer;
-    public Transform groundCheck;
-    public float groundCheckRadius = 0.2f;
+    public float dashCooldown = 1.5f;
 
-    private int currentDashCount;
+    private float currentDashCount;
     private bool isDashing = false;
     private bool isInvincible = false;
 
     private Rigidbody2D rb;
+    public Slider dashBar;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         currentDashCount = maxDashCount;
+        dashBar.maxValue = maxDashCount;
+        dashBar.value = currentDashCount;
     }
 
     void Update()
     {
         if (isDashing) return;
 
-        // 지면 체크로 대쉬 횟수 초기화
-        bool isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
-        if (isGrounded && currentDashCount < maxDashCount)
+        // 시간이 지남에 따라 대쉬 횟수 차징
+        if(currentDashCount < maxDashCount)
         {
-            currentDashCount = maxDashCount;
+            currentDashCount += Time.deltaTime / dashCooldown;
+            dashBar.value = currentDashCount;
         }
 
         // 대쉬 입력
@@ -41,11 +45,12 @@ public class PlayerDash : MonoBehaviour
         }
     }
 
-    private System.Collections.IEnumerator DoDash(Vector2 direction)
+    private IEnumerator DoDash(Vector2 direction)
     {
         isDashing = true;
         isInvincible = true;
         currentDashCount--;
+        dashBar.value = currentDashCount;
 
         float dashSpeed = dashDistance / dashDuration;
         float timer = 0f;

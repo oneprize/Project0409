@@ -76,7 +76,6 @@ GameObject:
   - component: {fileID: 3348494249216067485}
   - component: {fileID: 5757513339453590062}
   - component: {fileID: 4957843729401880881}
-  - component: {fileID: 6856105664562398006}
   - component: {fileID: 8956160377950664440}
   m_Layer: 7
   m_Name: BigWhiteSkelIdle
@@ -266,21 +265,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   isAttacking: 0
---- !u!114 &6856105664562398006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4703111767577029064}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 489938b74bb0fad45b373705959d10e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damage: 10
-  attackCooldown: 2
-  MonsterAI: {fileID: 4957843729401880881}
 --- !u!114 &8956160377950664440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -414,5 +398,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 10
+  attackDuration: 0.3
   attackCooldown: 2
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
   MonsterAI: {fileID: 0}

@@ -33,6 +33,7 @@ public class FlyMonsterMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private float sinTimer;
+    public bool isdead = false;
 
     private void Start()
     {
@@ -45,6 +46,7 @@ public class FlyMonsterMovement : MonoBehaviour
     void FixedUpdate()
     {
         if (player == null) return;
+        if (isdead) return;
         if (currentState == EnemyState.Dashing || currentState == EnemyState.ReadyToDash) return;
 
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);

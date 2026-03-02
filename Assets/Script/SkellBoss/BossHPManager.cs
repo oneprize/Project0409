@@ -8,6 +8,11 @@ public class BossHPManager : MonoBehaviour, IDamageable
     private int currentHP;
     private Animator animator;
 
+    public GameObject bossLaftHand;
+    public GameObject bossRightHand;
+    public GameObject bossdead;
+    public GameObject victoryCanvas;
+
     private void Awake()
     {
         animator = GetComponent<Animator>();
@@ -35,6 +40,10 @@ public class BossHPManager : MonoBehaviour, IDamageable
     {
         animator.SetTrigger("Die");
 
-        // Destroy();
+        Destroy(bossRightHand);
+        Destroy(bossLaftHand);
+
+        GameObject skellboss = Instantiate(bossdead);
+        victoryCanvas.SetActive(true);
     }
 }

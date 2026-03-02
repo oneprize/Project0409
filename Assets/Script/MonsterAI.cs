@@ -19,6 +19,7 @@ public class MonsterAI : MonoBehaviour
     private float decisionInterval = 2f;
 
     public bool isAttacking = false;
+    public bool isDead = false;
 
     private enum State { Idle, MoveLeft, MoveRight }
     private State currentState = State.Idle;
@@ -34,6 +35,7 @@ public class MonsterAI : MonoBehaviour
     void Update()
     {
         if (player == null) return;
+        if (isDead) return;
 
         // 공격 중이면 멈춤
         if (isAttacking)
@@ -133,6 +135,7 @@ public class MonsterAI : MonoBehaviour
 
         isAttacking = false;
     }
+
 
     void OnDrawGizmosSelected()
     {
