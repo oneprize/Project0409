@@ -14,6 +14,7 @@ public class Bossroom : MonoBehaviour
     public GameObject DungeonDoor;
     public GameObject DungeonDoor2;
     public GameObject HPUICanvas;
+    public GameObject BossnameCanvas;
 
     private float focusTime = 3f;
     private bool isBossZoomIN = false;
@@ -39,7 +40,9 @@ public class Bossroom : MonoBehaviour
         if (anim != null) anim.SetFloat("Speed", 0f);
 
         bossCamera.Priority = 20;
+        BossnameCanvas.SetActive(true);
         yield return new WaitForSeconds(focusTime);
+        BossnameCanvas.SetActive(false);
         bossCamera.Priority = 10;
         yield return new WaitForSeconds(1.5f);
         if (controller != null) controller.enabled = true;

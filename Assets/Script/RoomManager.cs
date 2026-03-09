@@ -19,6 +19,7 @@ public class RoomManager : MonoBehaviour
             {
                 if (monster != null) Destroy(monster);
             }
+            
             Debug.Log("클리어된 방이므로 몬스터를 소환하지 않습니다.");
         }
     }

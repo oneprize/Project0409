@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour, IDamageable
     public int maxJumps = 2;
     public int maxHP = 100;
 
-    private int currentHP;
+    public int currentHP;
     private int jumpCount;
     private bool isGrounded;
     private bool wasGrounded;
@@ -26,9 +26,11 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     //  Game Over UI 연결용
     public GameObject gameOverUI;
+    private GameObject player;
 
     private Camera mainCamera;
     private PlayerDash playerDash;
+    private PlayerAttack playerAttack;
     public Transform weaponPivot;
 
     [SerializeField] Transform groundCheck2;
@@ -62,11 +64,11 @@ public class PlayerController : MonoBehaviour, IDamageable
         jumpCount = maxJumps;
         currentHP = maxHP;
 
-        if (hpBar != null)
-        {
-            hpBar.maxValue = maxHP;
-            hpBar.value = currentHP;
-        }
+        //if (hpBar != null)
+        //{
+        //    hpBar.maxValue = maxHP;
+        //    hpBar.value = currentHP;
+        //}
 
         // 게임 오버 UI 꺼두기
         if (gameOverUI != null)
@@ -75,7 +77,11 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     void Update()
     {
-        Die();
+        if (isDead)
+        {
+            Die();
+            return; 
+        }
 
         float moveX = Input.GetAxisRaw("Horizontal");
         rb.linearVelocity = new Vector2(moveX * moveSpeed, rb.linearVelocity.y);
@@ -188,10 +194,10 @@ public class PlayerController : MonoBehaviour, IDamageable
         currentHP -= damage;
         currentHP = Mathf.Max(0, currentHP);
 
-        if (hpBar != null)
-        {
-            hpBar.value = currentHP;
-        }
+        //if (hpBar != null)
+        //{
+        //    hpBar.value = currentHP;
+        //}
 
         Debug.Log("플레이어 피격! 남은 HP: " + currentHP);
 
@@ -214,15 +220,23 @@ public class PlayerController : MonoBehaviour, IDamageable
             }
         }
     }
+    private void PlayerAttackFounder()
+    {
+        player = GameObject.FindWithTag("Player");
+        if (playerAttack == null)
+            playerAttack = player.GetComponentInChildren<PlayerAttack>();
+    }
     public void Die()
     {
         if (isDead)
         {
+            rb.linearVelocity= Vector2.zero;
+            animator.SetFloat("Speed", 0);
+            if(playerAttack != null) playerAttack.enabled = false;
             // R 키로 씬 재시작
             if (Input.GetKeyDown(KeyCode.R))
             {
                 ResetGame();
-                SceneManager.LoadScene("Village");
             }
             return;
         }
@@ -230,7 +244,21 @@ public class PlayerController : MonoBehaviour, IDamageable
 
     private void ResetGame()
     {
-        Destroy(gameObject);
-        gameOverUI.SetActive(false);
+        isDead = false;
+        currentHP = maxHP;
+        jumpCount = maxJumps;
+
+        // 2. UI 및 컴포넌트 복구
+        if (hpBar != null) hpBar.value = maxHP;
+        if (gameOverUI != null) gameOverUI.SetActive(false);
+        if (playerAttack != null) playerAttack.enabled = true;
+
+        if (animator != null)
+        {
+            animator.Rebind(); // 애니메이터의 모든 파라미터와 상태를 초기 상태로 리셋
+            animator.Update(0f);
+        }
+
+        SceneManager.LoadScene("Village");
     }
 }

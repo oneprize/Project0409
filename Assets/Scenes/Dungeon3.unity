@@ -2548,7 +2548,7 @@ GameObject:
   - component: {fileID: 368656428}
   - component: {fileID: 368656427}
   m_Layer: 9
-  m_Name: Tilemap
+  m_Name: Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3663,7 +3663,7 @@ GameObject:
   - component: {fileID: 1986776221}
   - component: {fileID: 1986776220}
   m_Layer: 8
-  m_Name: Tilemap
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7173,7 +7173,7 @@ Rigidbody2D:
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: ec6b279688b5cc6429df259d7469d73d, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0

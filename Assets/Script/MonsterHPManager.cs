@@ -9,6 +9,7 @@ public class MonsterHPManager : MonoBehaviour, IDamageable
 
     public MonsterAI monsterAI;
     public FlyMonsterMovement flyMonster;
+    public MonsterAttack monsterAttack;
     public int maxHP = 30;
     private int currentHP;
     private Animator animator;
@@ -25,6 +26,7 @@ public class MonsterHPManager : MonoBehaviour, IDamageable
         animator = GetComponent<Animator>();
         monsterAI = GetComponent<MonsterAI>();
         flyMonster = GetComponent<FlyMonsterMovement>();
+        monsterAttack = GetComponentInChildren<MonsterAttack>();
         originalColor = spriteRenderer.color;
         GameObject monster = GameObject.FindWithTag("Enemy");
         rd = GetComponent<Rigidbody2D>();
@@ -67,7 +69,10 @@ public class MonsterHPManager : MonoBehaviour, IDamageable
     {
         if (isDead) return;
         isDead = true;
-        if(monsterAI != null)monsterAI.isDead = true;
+        if (monsterAI != null) monsterAI.StopAllCoroutines();
+        if (monsterAI != null) monsterAI.enabled = false;
+        if (monsterAttack != null) monsterAttack.StopAllCoroutines();
+        if (monsterAttack != null)monsterAttack.enabled = false;
         if(flyMonster != null)flyMonster.isdead = true;
         spriteRenderer.color = originalColor;
         animator.SetTrigger("Die");
