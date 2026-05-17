@@ -10,7 +10,7 @@ public class PlayerDash : MonoBehaviour
     public int maxDashCount = 2;
     public float dashCooldown = 1.5f;
 
-    private float currentDashCount;
+    public float currentDashCount;
     private bool isDashing = false;
     private bool isInvincible = false;
 
@@ -21,8 +21,8 @@ public class PlayerDash : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         currentDashCount = maxDashCount;
-        dashBar.maxValue = maxDashCount;
-        dashBar.value = currentDashCount;
+        // dashBar.maxValue = maxDashCount;
+        // dashBar.value = currentDashCount;
     }
 
     void Update()
@@ -33,7 +33,7 @@ public class PlayerDash : MonoBehaviour
         if(currentDashCount < maxDashCount)
         {
             currentDashCount += Time.deltaTime / dashCooldown;
-            dashBar.value = currentDashCount;
+            // dashBar.value = currentDashCount;
         }
 
         // 대쉬 입력
@@ -50,7 +50,7 @@ public class PlayerDash : MonoBehaviour
         isDashing = true;
         isInvincible = true;
         currentDashCount--;
-        dashBar.value = currentDashCount;
+        // dashBar.value = currentDashCount;
 
         float dashSpeed = dashDistance / dashDuration;
         float timer = 0f;

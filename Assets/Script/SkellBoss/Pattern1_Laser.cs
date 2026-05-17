@@ -83,15 +83,44 @@ public class Pattern1_Laser : BossPattern
         yield return new WaitForSeconds(laserDuration);
     }
 
+    //void FireLaser(Transform hand)
+    //{
+    //    Transform firePoint = hand.Find("FirePoint");
+    //    Vector3 spawnPos = (firePoint != null) ? firePoint.position : hand.position;
+
+    //    GameObject laser = Instantiate(laserPrefab, spawnPos, Quaternion.identity);
+
+    //    float direction = (hand.position.x < boss.player.position.x) ? 1f : -1f;
+    //    laser.transform.localScale = new Vector3(direction, 1, 1);
+
+    //    Destroy(laser, laserDuration);
+    //}
+
     void FireLaser(Transform hand)
     {
         Transform firePoint = hand.Find("FirePoint");
         Vector3 spawnPos = (firePoint != null) ? firePoint.position : hand.position;
 
+        // 1. 레이저 생성 (기본 방향)
         GameObject laser = Instantiate(laserPrefab, spawnPos, Quaternion.identity);
 
+        // 2. 방향 결정 (플레이어가 오른쪽에 있으면 1, 왼쪽에 있으면 -1)
         float direction = (hand.position.x < boss.player.position.x) ? 1f : -1f;
-        laser.transform.localScale = new Vector3(direction, 1, 1);
+
+        // 3. [수정됨] 스케일 대신 회전(Rotation)을 사용하여 경고 방지
+        if (direction < 0)
+        {
+            // 왼쪽을 바라볼 때: Y축을 180도 회전 (Scale은 1 유지)
+            laser.transform.rotation = Quaternion.Euler(0, 180f, 0);
+        }
+        else
+        {
+            // 오른쪽을 바라볼 때: 회전 없음
+            laser.transform.rotation = Quaternion.identity;
+        }
+
+        // 스케일은 항상 양수로 고정 (이미 Prefab이 1이면 생략 가능)
+        laser.transform.localScale = Vector3.one;
 
         Destroy(laser, laserDuration);
     }

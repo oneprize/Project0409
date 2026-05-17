@@ -7,9 +7,11 @@ public class BossAttack : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        Debug.Log("플레이어 충돌");
         // 1. 플레이어인지 확인
         if (collision.CompareTag("Player"))
         {
+            Debug.Log($"충돌 이름:{collision.gameObject.name}");
             // 2. 플레이어의 TakeDamage 호출
             if (collision.TryGetComponent<PlayerController>(out var player))
             {

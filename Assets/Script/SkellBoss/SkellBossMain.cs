@@ -14,7 +14,6 @@ public class BossMain : MonoBehaviour
     private Vector3 leftHandOrigin;
     private Vector3 rightHandOrigin;
 
-    [Header("Patterns")]
     public List<BossPattern> patterns;
     private int lastPatternIndex = -1; // 직전 패턴 기억
 
@@ -37,6 +36,8 @@ public class BossMain : MonoBehaviour
         isBossActive = true;
         StartCoroutine(PatternLoop());
     }
+
+    
 
     IEnumerator PatternLoop()
     {

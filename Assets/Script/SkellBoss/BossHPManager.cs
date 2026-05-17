@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class BossHPManager : MonoBehaviour, IDamageable
 {
@@ -12,6 +13,8 @@ public class BossHPManager : MonoBehaviour, IDamageable
     public GameObject bossRightHand;
     public GameObject bossdead;
     public GameObject victoryCanvas;
+    public GameObject victoryPanel;
+    
 
     private void Awake()
     {
@@ -38,12 +41,26 @@ public class BossHPManager : MonoBehaviour, IDamageable
 
     public void Die()
     {
+        StartCoroutine(DieSequence());
+    }
+
+    IEnumerator DieSequence()
+    {
         animator.SetTrigger("Die");
-
-        Destroy(bossRightHand);
-        Destroy(bossLaftHand);
-
-        GameObject skellboss = Instantiate(bossdead);
+        Instantiate(bossdead, transform.position, transform.rotation);
         victoryCanvas.SetActive(true);
+        yield return new WaitForSeconds(2f);
+        victoryPanel.SetActive(true);
+
+        yield return new WaitForSeconds(3f);
+
+        GameObject[] lasers = GameObject.FindGameObjectsWithTag("Laser");
+        foreach (GameObject a in lasers) Destroy(a);
+        GameObject[] bullets = GameObject.FindGameObjectsWithTag("Bullet");
+        foreach (GameObject b in bullets) Destroy(b);
+        GameObject[] swords = GameObject.FindGameObjectsWithTag("Sword");
+        foreach (GameObject c in swords) Destroy(c);
+        // 5. 보스 본체 파괴
+        Destroy(gameObject);
     }
 }

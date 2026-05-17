@@ -1,19 +1,10 @@
 fileFormatVersion: 2
-guid: 4f63dfd0712f62948b1639781b176150
+guid: a0e5fe13d68bb7c4682bb853a148cf74
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6212051725271248824
-    second: ShootingCursor2_0
-  - first:
-      213: -303626591161597401
-    second: ShootingCursor2_1
-  - first:
-      213: -8387394522338960788
-    second: ShootingCursor2_2
-  - first:
-      213: 5975406728824481906
-    second: ShootingCursor2_3
+      213: 3637733198901220109
+    second: Inn_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -33,7 +24,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 1
+  isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -55,18 +46,18 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
-  textureType: 7
+  textureType: 8
   textureShape: 1
   singleChannelComponent: 0
   flipbookRows: 1
@@ -109,57 +100,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ShootingCursor2_0
+      name: Inn_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 1
-        width: 9
-        height: 12
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8bf252b9124a53650800000000000000
-      internalID: 6212051725271248824
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ShootingCursor2_1
-      rect:
-        serializedVersion: 2
-        x: 1
-        y: 12
-        width: 12
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7224379593d49cbf0800000000000000
-      internalID: -303626591161597401
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ShootingCursor2_2
-      rect:
-        serializedVersion: 2
-        x: 8
         y: 0
-        width: 13
-        height: 13
+        width: 214
+        height: 129
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -168,30 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c6adde8ce1df99b80800000000000000
-      internalID: -8387394522338960788
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ShootingCursor2_3
-      rect:
-        serializedVersion: 2
-        x: 12
-        y: 12
-        width: 8
-        height: 8
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 278ef04c2c8ece250800000000000000
-      internalID: 5975406728824481906
+      spriteID: d0317242213db7230800000000000000
+      internalID: 3637733198901220109
       vertices: []
       indices: 
       edges: []
@@ -200,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -209,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Inn_0: 3637733198901220109
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
